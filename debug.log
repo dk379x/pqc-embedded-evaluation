@@ -1,0 +1,53 @@
+2025-02-07 14:29:51,361 - Debug Adapter (main) - INFO - Working directory: C:\Users\danie\AppData\Local\Programs\Microsoft VS Code
+2025-02-07 14:29:51,362 - Debug Adapter (main) - INFO - Arguments: 
+{   'app_flash_off': 65536,
+    'board_type': None,
+    'cmdfile': None,
+    'core_file': (),
+    'debug': 3,
+    'developer_mode': 'none',
+    'device_name': 'esp32',
+    'elfpath': (   'c:\\Users\\danie\\OneDrive\\SD '
+                   'AGH\\Projekty\\ESP-IDF\\esp32_dilithium_impl\\build\\hello_world.elf',),
+    'log_file': 'c:\\Users\\danie\\OneDrive\\SD '
+                'AGH\\Projekty\\ESP-IDF\\esp32_dilithium_impl\\debug.log',
+    'log_mult_files': None,
+    'log_no_debug_console': None,
+    'oocd': 'openocd',
+    'oocd_args': None,
+    'oocd_ip': 'localhost',
+    'oocd_mode': 'connect_to_instance',
+    'oocd_scripts': None,
+    'port': 43474,
+    'postmortem': False,
+    'tmo_scale_factor': 1,
+    'toolchain_prefix': 'xtensa-esp32-elf-'}
+2025-02-07 14:29:51,363 - Debug Adapter (main) - CRITICAL - Debug adapter -> Extension: DEBUG_ADAPTER_STARTED
+2025-02-07 14:29:51,363 - Debug Adapter (main) - INFO - Starting. Cmd: c:\Users\danie\.vscode\extensions\espressif.esp-idf-extension-1.9.0\esp_debug_adapter\debug_adapter_main.py -d 3 -e c:\Users\danie\OneDrive\SD AGH\Projekty\ESP-IDF\esp32_dilithium_impl\build\hello_world.elf -l c:\Users\danie\OneDrive\SD AGH\Projekty\ESP-IDF\esp32_dilithium_impl\debug.log -p 43474 -dn esp32 -a 0x10000 -t xtensa-esp32-elf-
+
+2025-02-07 14:29:51,371 - Debug Adapter (main) - INFO - Listening on port 43474
+2025-02-07 14:29:51,371 - Debug Adapter (main) - CRITICAL - Debug adapter -> Extension: DEBUG_ADAPTER_READY2CONNECT
+2025-02-07 14:29:51,757 - Gdb - INFO - NOTIFY: thread-group-added {'id': 'i1'}
+2025-02-07 14:29:51,798 - Gdb - INFO - CONS: ("Warning: 'set logging on', an alias for the command 'set logging enabled', "
+ 'is deprecated.\n')
+2025-02-07 14:29:51,799 - Gdb - INFO - CONS: "Use 'set logging enabled on'.\n\n"
+2025-02-07 14:29:56,799 - Debug Adapter (main) - ERROR - Failed to set program file!
+Traceback (most recent call last):
+  File "c:\Users\danie\.vscode\extensions\espressif.esp-idf-extension-1.9.0\esp_debug_adapter\debug_adapter\command_processor.py", line 52, in __call__
+    on_request(protocol_message)
+  File "c:\Users\danie\.vscode\extensions\espressif.esp-idf-extension-1.9.0\esp_debug_adapter\debug_adapter\command_processor.py", line 75, in on_initialize_request
+    raise e
+  File "c:\Users\danie\.vscode\extensions\espressif.esp-idf-extension-1.9.0\esp_debug_adapter\debug_adapter\command_processor.py", line 70, in on_initialize_request
+    self.da.adapter_init()
+  File "c:\Users\danie\.vscode\extensions\espressif.esp-idf-extension-1.9.0\esp_debug_adapter\debug_adapter\debug_adapter.py", line 329, in adapter_init
+    raise e
+  File "c:\Users\danie\.vscode\extensions\espressif.esp-idf-extension-1.9.0\esp_debug_adapter\debug_adapter\debug_adapter.py", line 325, in adapter_init
+    self.start_gdb()
+  File "c:\Users\danie\.vscode\extensions\espressif.esp-idf-extension-1.9.0\esp_debug_adapter\debug_adapter\debug_adapter.py", line 678, in start_gdb
+    raise e
+  File "c:\Users\danie\.vscode\extensions\espressif.esp-idf-extension-1.9.0\esp_debug_adapter\debug_adapter\debug_adapter.py", line 666, in start_gdb
+    self._gdb.exec_file_set(elf)
+  File "C:\Users\danie\.espressif\python_env\idf5.1_py3.11_env\Lib\site-packages\esp_debug_backend\gdb.py", line 285, in exec_file_set
+    raise DebuggerError('Failed to set program file!')
+esp_debug_backend.defs.DebuggerError: Failed to set program file!
+2025-02-07 14:29:56,803 - Debug Adapter (main) - CRITICAL - Debug adapter -> Extension: DEBUG_ADAPTER_STOPPED

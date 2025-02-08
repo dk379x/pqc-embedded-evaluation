@@ -1,0 +1,11 @@
+{
+    "C_Cpp.intelliSenseEngine": "default",
+    "idf.espIdfPathWin": "C:\\Users\\danie\\esp\\v5.1.5\\esp-idf",
+    "idf.toolsPathWin": "C:\\Users\\danie\\.espressif",
+    "idf.flashType": "UART",
+    "idf.portWin": "COM20",
+    "files.associations": {
+        "esp_log.h": "c",
+        "api.h": "c"
+    }
+}
