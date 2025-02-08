@@ -18,4 +18,4 @@ idf_component_register(SRCS "ref/address.c"
                             "ref/wots.c"
                             "ref/wotsx1.c"
                     INCLUDE_DIRS "ref"
-                    REQUIRES crypto)
+                    REQUIRES crypto mbedtls)
