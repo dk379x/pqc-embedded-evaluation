@@ -7,5 +7,7 @@
     "files.associations": {
         "esp_log.h": "c",
         "api.h": "c"
-    }
+    },
+    "idf.pythonInstallPath": "/usr/bin/python3",
+    "idf.port": "/dev/tty.usbserial-101"
 }

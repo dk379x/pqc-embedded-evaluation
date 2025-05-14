@@ -143,10 +143,20 @@ AES256_ECB(unsigned char *key, unsigned char *ctr, unsigned char *buffer)
 
 void AES256_ECB(unsigned char *key, unsigned char *ctr, unsigned char *buffer) {
     mbedtls_aes_context aes;
+
+    // Acquire hardware AES engine
+    esp_aes_acquire_hardware();
+    
     mbedtls_aes_init(&aes);
     mbedtls_aes_setkey_enc(&aes, key, 256);
+    
+    // Use ESP32's hardware AES acceleration
     mbedtls_aes_crypt_ecb(&aes, MBEDTLS_AES_ENCRYPT, ctr, buffer);
+    
     mbedtls_aes_free(&aes);
+    
+    // Release hardware AES engine
+    esp_aes_release_hardware();
 }
 
 void

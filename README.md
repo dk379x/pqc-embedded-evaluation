@@ -1,53 +1,45 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-H2 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- |
+# ESP32-SLH-DSA-FIPS205
 
-# Hello World Example
+Implementation and benchmarking of the SLH-DSA (FIPS 205) post-quantum digital signature scheme on the ESP32 platform.
 
-Starts a FreeRTOS task to print "Hello World".
+## Overview
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+This repository provides a resource-constrained implementation of the **SLH-DSA** algorithm (formerly known as SPHINCS+) standardized by **NIST** in **FIPS 205** for use on **Espressif ESP32** microcontrollers. The implementation targets secure, quantum-resistant digital signatures for embedded and IoT devices.
 
-## How to use example
+## Features
 
-Follow detailed instructions provided specifically for this example.
+- 🛡️ SLH-DSA (FIPS 205) cryptographic primitives
+- ⚙️ Hardware-specific integration for ESP32 using ESP-IDF
+- 📊 Benchmarking: execution time, RAM/flash usage, CPU cycles
+- 🔌 UART-based logging for performance analysis
+- 🔐 Integration with ESP32 TRNG for secure randomness
 
-Select the instructions depending on Espressif chip installed on your development board:
+## Requirements
 
-- [ESP32 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/stable/get-started/index.html)
-- [ESP32-S2 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html)
+- ESP32-PICO-KIT or any ESP32 development board  
+- ESP-IDF v4.4 or newer  
+- Python 3.x (for flashing/debug scripts)  
+- OpenOCD or ESP-PROG (for optional JTAG debugging)
+
+## Folder Structure
 
 
-## Example folder contents
 
-The project **hello_world** contains one source file in C language [hello_world_main.c](main/hello_world_main.c). The file is located in folder [main](main).
+## Getting Started
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt` files that provide set of directives and instructions describing the project's source files and targets (executable, library, or both).
+1. **Clone the repo**  
 
-Below is short explanation of remaining files in the project folder.
+2. **Build and flash the firmware**
 
-```
-├── CMakeLists.txt
-├── pytest_hello_world.py      Python script used for automated testing
-├── main
-│   ├── CMakeLists.txt
-│   └── hello_world_main.c
-└── README.md                  This is the file you are currently reading
-```
+3. **View logs**
 
-For more information on structure and contents of ESP-IDF projects, please refer to Section [Build System](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html) of the ESP-IDF Programming Guide.
 
-## Troubleshooting
+## References
 
-* Program upload failure
+- [FIPS 205 – SLH-DSA Standard](https://csrc.nist.gov/publications/detail/fips/205/final)
+- SPHINCS+ Reference Implementation
+- [Espressif ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/)
 
-    * Hardware connection is not correct: run `idf.py -p PORT monitor`, and reboot your board to see if there are any output logs.
-    * The baud rate for downloading is too high: lower your baud rate in the `menuconfig` menu, and try again.
+## License
 
-## Technical support and feedback
-
-Please use the following feedback channels:
-
-* For technical queries, go to the [esp32.com](https://esp32.com/) forum
-* For a feature request or bug report, create a [GitHub issue](https://github.com/espressif/esp-idf/issues)
-
-We will get back to you as soon as possible.
+MIT License. See `LICENSE` for details.
