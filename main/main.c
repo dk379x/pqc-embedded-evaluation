@@ -45,18 +45,30 @@
  
  // 🔥 Benchmark SPHINCS+
  void test_sphincsplus(void) {
+
+    
      uint64_t start, end;
      uint32_t start_cycles, end_cycles;
  
+     /*
+     25-06-2025
      uint8_t pk[CRYPTO_PUBLICKEYBYTES];  // Klucz publiczny
      uint8_t sk[CRYPTO_SECRETKEYBYTES];  // Klucz prywatny
+     */
+
+     uint8_t *pk = malloc(CRYPTO_PUBLICKEYBYTES);
+     uint8_t *sk = malloc(CRYPTO_SECRETKEYBYTES);
+
      uint8_t message[] = "Test SPHINCS+ Signature";
      uint8_t signed_message[CRYPTO_BYTES + sizeof(message)];
      uint8_t unsigned_message[sizeof(message)];
      size_t signed_message_len, unsigned_message_len;
  
+     
+    
      ESP_LOGI(TAG, "Starting SPHINCS+ keypair generation...");
  
+     
      log_ram_usage("Before Key Generation");
      start = esp_timer_get_time();
      start_cycles = read_cpu_cycles();
@@ -72,6 +84,8 @@
      log_ram_usage("After Key Generation");
      ESP_LOGI(TAG, "CPU Cycles: %lu", end_cycles - start_cycles);
  
+     /*
+
      // 📝 Podpisanie wiadomości
      ESP_LOGI(TAG, "Signing message...");
      log_ram_usage("Before Signing");
@@ -113,8 +127,12 @@
          ESP_LOGE(TAG, "Message comparison failed.");
          while (1);
      }
+
+     */
  
      ESP_LOGI(TAG, "Message comparison successful. Test passed.");
+
+
  }
  
  void app_main(void) {

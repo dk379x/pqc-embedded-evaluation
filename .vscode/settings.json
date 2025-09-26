@@ -8,6 +8,6 @@
         "esp_log.h": "c",
         "api.h": "c"
     },
-    "idf.pythonInstallPath": "/usr/bin/python3",
-    "idf.port": "/dev/tty.usbserial-101"
+    "idf.pythonInstallPath": "C:\\Users\\danie\\.espressif\\tools\\idf-python\\3.11.2\\python.exe",
+    "idf.port": "/dev/tty.usbserial-1101"
 }
