@@ -1,0 +1,1 @@
+void liboqs_component_placeholder(void) {}
