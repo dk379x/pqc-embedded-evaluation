@@ -1,13 +1,19 @@
 {
-    "C_Cpp.intelliSenseEngine": "default",
-    "idf.espIdfPathWin": "C:\\Users\\danie\\esp\\v5.1.5\\esp-idf",
-    "idf.toolsPathWin": "C:\\Users\\danie\\.espressif",
-    "idf.flashType": "UART",
-    "idf.portWin": "COM20",
-    "files.associations": {
-        "esp_log.h": "c",
-        "api.h": "c"
-    },
-    "idf.pythonInstallPath": "C:\\Users\\danie\\.espressif\\tools\\idf-python\\3.11.2\\python.exe",
-    "idf.port": "/dev/tty.usbserial-1101"
+  "C_Cpp.intelliSenseEngine": "default",
+  "idf.espIdfPathWin": "C:\\Users\\danie\\esp\\v5.1.5\\esp-idf",
+  "idf.toolsPathWin": "C:\\Users\\danie\\.espressif",
+  "idf.flashType": "UART",
+  "idf.portWin": "COM20",
+  "files.associations": {
+    "esp_log.h": "c",
+    "api.h": "c"
+  },
+  "idf.pythonInstallPath": "/usr/bin/python3",
+  "idf.port": "/dev/tty.usbmodem101",
+  "idf.customExtraVars": {
+    "IDF_TARGET": "esp32c6"
+  },
+  "idf.openOcdConfigs": [
+    "board/esp32c6-builtin.cfg"
+  ]
 }

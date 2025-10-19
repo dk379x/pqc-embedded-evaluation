@@ -16,128 +16,13 @@
  
  #include <stdlib.h>
  #include <string.h>
- 
- #include "api.h"   // SPHINCS+ API
- 
- static const char *TAG = "SPHINCSPlusTest";
- 
- // 🔥 Funkcja do logowania czasu
- void log_time(const char *operation, uint64_t start, uint64_t end) {
-     uint64_t elapsed = end - start;
-     uint64_t ms = elapsed / 1000;
-     uint64_t us = elapsed % 1000;
-     ESP_LOGI(TAG, "%s time: %llu,%03llu ms", operation, ms, us);
- }
- 
- // 🔥 Funkcja do pomiaru RAM
- void log_ram_usage(const char *operation) {
-     multi_heap_info_t heap_info;
-     heap_caps_get_info(&heap_info, MALLOC_CAP_INTERNAL);
-     ESP_LOGI(TAG, "%s RAM Usage: %d bytes", operation, heap_info.total_allocated_bytes);
- }
- 
- // 🔥 Funkcja do pomiaru CPU Cycles
- uint32_t read_cpu_cycles() {
-     uint32_t cycles;
-     asm volatile ("rsr %0, ccount" : "=r"(cycles));
-     return cycles;
- }
- 
- // 🔥 Benchmark SPHINCS+
- void test_sphincsplus(void) {
 
-    
-     uint64_t start, end;
-     uint32_t start_cycles, end_cycles;
  
-     /*
-     25-06-2025
-     uint8_t pk[CRYPTO_PUBLICKEYBYTES];  // Klucz publiczny
-     uint8_t sk[CRYPTO_SECRETKEYBYTES];  // Klucz prywatny
-     */
 
-     uint8_t *pk = malloc(CRYPTO_PUBLICKEYBYTES);
-     uint8_t *sk = malloc(CRYPTO_SECRETKEYBYTES);
-
-     uint8_t message[] = "Test SPHINCS+ Signature";
-     uint8_t signed_message[CRYPTO_BYTES + sizeof(message)];
-     uint8_t unsigned_message[sizeof(message)];
-     size_t signed_message_len, unsigned_message_len;
- 
-     
-    
-     ESP_LOGI(TAG, "Starting SPHINCS+ keypair generation...");
- 
-     
-     log_ram_usage("Before Key Generation");
-     start = esp_timer_get_time();
-     start_cycles = read_cpu_cycles();
- 
-     if (crypto_sign_keypair(pk, sk) != 0) {
-         ESP_LOGE(TAG, "Keypair generation failed.");
-         while (1);
-     }
- 
-     end_cycles = read_cpu_cycles();
-     end = esp_timer_get_time();
-     log_time("Keypair generation", start, end);
-     log_ram_usage("After Key Generation");
-     ESP_LOGI(TAG, "CPU Cycles: %lu", end_cycles - start_cycles);
- 
-     /*
-
-     // 📝 Podpisanie wiadomości
-     ESP_LOGI(TAG, "Signing message...");
-     log_ram_usage("Before Signing");
-     start = esp_timer_get_time();
-     start_cycles = read_cpu_cycles();
- 
-     if (crypto_sign(signed_message, &signed_message_len, message, sizeof(message), sk) != 0) {
-         ESP_LOGE(TAG, "Message signing failed.");
-         while (1);
-     }
- 
-     end_cycles = read_cpu_cycles();
-     end = esp_timer_get_time();
-     log_time("Message signing", start, end);
-     log_ram_usage("After Signing");
-     ESP_LOGI(TAG, "CPU Cycles: %lu", end_cycles - start_cycles);
- 
-     // 📝 Weryfikacja podpisu
-     ESP_LOGI(TAG, "Verifying signature...");
-     log_ram_usage("Before Verification");
-     start = esp_timer_get_time();
-     start_cycles = read_cpu_cycles();
- 
-     if (crypto_sign_open(unsigned_message, &unsigned_message_len, signed_message, signed_message_len, pk) != 0) {
-         ESP_LOGE(TAG, "Signature verification failed.");
-         while (1);
-     }
- 
-     end_cycles = read_cpu_cycles();
-     end = esp_timer_get_time();
-     log_time("Signature verification", start, end);
-     log_ram_usage("After Verification");
-     ESP_LOGI(TAG, "CPU Cycles: %lu", end_cycles - start_cycles);
- 
-     // 📝 Porównanie wiadomości oryginalnej z odtworzoną
-     ESP_LOGI(TAG, "Comparing original and unsigned messages...");
- 
-     if (unsigned_message_len != sizeof(message) || memcmp(message, unsigned_message, sizeof(message)) != 0) {
-         ESP_LOGE(TAG, "Message comparison failed.");
-         while (1);
-     }
-
-     */
- 
-     ESP_LOGI(TAG, "Message comparison successful. Test passed.");
-
-
- }
  
  void app_main(void) {
      printf("ESP32 SPHINCS+ implementation\n");
-     test_sphincsplus();
+     //test_sphincsplus();
      while(1) {
          vTaskDelay(1000 / portTICK_PERIOD_MS);
      }
