@@ -23,7 +23,7 @@
 void app_main(void) {
     printf("ESP32 + liboqs SPHINCS+ test\n");
 
-    OQS_SIG *sig = OQS_SIG_new(OQS_SIG_alg_sphincs_sha2_128f_simple);
+    OQS_SIG *sig = OQS_SIG_new(OQS_SIG_alg_sphincs_shake_256s_simple);
     if (sig == NULL) {
         printf("OQS_SIG_new failed\n");
         return;
