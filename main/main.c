@@ -19,9 +19,43 @@
 
 #include <oqs.h>
 
+static volatile uint64_t g_t0_us = 0;   // start time (µs)
+static volatile int g_done = 0;         // sygnał „krytyczne obliczenia skończone”
+
+static void ticker_task(void *arg) {
+    while (1) {
+        uint64_t now = esp_timer_get_time();
+        double elapsed = (now - g_t0_us) / 1e6;
+
+        // zamiast printf z \n -> użyj \r i flush
+        printf("\r[+%7.3fs] running... (free heap: %u bytes)%s",
+               elapsed,
+               (unsigned)heap_caps_get_free_size(MALLOC_CAP_DEFAULT),
+               g_done ? " DONE ✅" : "     ");
+        fflush(stdout); // ważne: wypchnij bufor na UART
+
+        //esp_task_wdt_reset();
+        vTaskDelay(pdMS_TO_TICKS(200)); // aktualizacja co 200 ms
+    }
+}
+
 
 void app_main(void) {
-    printf("ESP32 + liboqs SPHINCS+ test\n");
+
+    printf("ESP32 PQC Benchmark by dk379x\n");
+
+    // start czasu globalny – ticker będzie się do niego odnosił
+    g_t0_us = esp_timer_get_time();
+
+    // Odpal ticker w osobnym wątku
+    xTaskCreate(
+        ticker_task,          // funkcja
+        "ticker",             // nazwa
+        3072,                 // stack (zapas na printf)
+        NULL,                 // arg
+        tskIDLE_PRIORITY + 1, // priorytet nieco ponad idle
+        NULL                  // uchwyt
+    );
 
     // NIST level 5
     //OQS_SIG *sig = OQS_SIG_new(OQS_SIG_alg_sphincs_shake_256s_simple);
@@ -69,19 +103,12 @@ void app_main(void) {
     free(signature);
     OQS_SIG_free(sig);
 
+    g_done = 1;
+
     // Pętla aby nie zakończyć taska
     while (1) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
 
- /*
- void app_main(void) {
-     printf("ESP32 SPHINCS+ implementation\n");
-     //test_sphincsplus();
-     while(1) {
-         vTaskDelay(1000 / portTICK_PERIOD_MS);
-     }
- }
-*/
  
