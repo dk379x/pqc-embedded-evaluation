@@ -23,16 +23,25 @@
 void app_main(void) {
     printf("ESP32 + liboqs SPHINCS+ test\n");
 
-    OQS_SIG *sig = OQS_SIG_new(OQS_SIG_alg_sphincs_shake_256s_simple);
+    // NIST level 5
+    //OQS_SIG *sig = OQS_SIG_new(OQS_SIG_alg_sphincs_shake_256s_simple);
+
+    //NIST level 1
+    OQS_SIG *sig = OQS_SIG_new(OQS_SIG_alg_sphincs_shake_128s_simple);
+    
     if (sig == NULL) {
         printf("OQS_SIG_new failed\n");
         return;
     }
 
+    printf("Starting memory alocation\n");
+
     uint8_t *public_key = malloc(sig->length_public_key);
     uint8_t *secret_key = malloc(sig->length_secret_key);
     uint8_t *message = (uint8_t *)"Hello PQ world!";
     uint8_t *signature = malloc(sig->length_signature);
+
+    printf("Key generation...\n");
 
     // Wygeneruj klucze
     if (OQS_SIG_keypair(sig, public_key, secret_key) != OQS_SUCCESS) {
