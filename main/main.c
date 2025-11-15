@@ -230,6 +230,75 @@ static void bench_mlkem_all(void)
 }
 
 
+/* ================== ML-DSA BENCHMARK (wszystkie warianty) ================== */
+
+static const char *ml_dsa_algs[] = {
+    "ML-DSA-44",
+    "ML-DSA-65",
+    "ML-DSA-87"
+};
+static const size_t ml_dsa_count = sizeof(ml_dsa_algs) / sizeof(ml_dsa_algs[0]);
+
+static void benchmark_ml_dsa(void) {
+    printf("\n=== ML-DSA benchmark START ===\n");
+
+    for (size_t i = 0; i < ml_dsa_count; i++) {
+        const char *alg = ml_dsa_algs[i];
+
+        printf("----- ML-DSA variant: %s -----\n", alg);
+
+        OQS_SIG *sig = OQS_SIG_new(alg);
+        if (sig == NULL) {
+            printf("  [SKIP] OQS_SIG_new(%s) failed – algorithm not enabled\n", alg);
+            continue;
+        }
+
+        uint8_t *pk  = malloc(sig->length_public_key);
+        uint8_t *sk  = malloc(sig->length_secret_key);
+        uint8_t *sig_out = malloc(sig->length_signature);
+        const uint8_t msg[] = "Test message for ML-DSA benchmark";
+        size_t sig_len = 0;
+
+        uint64_t t0, t1;
+
+        // --- KEYGEN ---
+        t0 = esp_timer_get_time();
+        OQS_STATUS r1 = OQS_SIG_keypair(sig, pk, sk);
+        t1 = esp_timer_get_time();
+
+        printf("  keypair:   %s   time = %.3f ms\n",
+               r1 == OQS_SUCCESS ? "OK" : "FAIL",
+               (t1 - t0) / 1000.0);
+
+        // --- SIGN ---
+        t0 = esp_timer_get_time();
+        OQS_STATUS r2 = OQS_SIG_sign(sig, sig_out, &sig_len, msg, sizeof(msg), sk);
+        t1 = esp_timer_get_time();
+
+        printf("  sign:      %s   time = %.3f ms (sig len = %u)\n",
+               r2 == OQS_SUCCESS ? "OK" : "FAIL",
+               (t1 - t0) / 1000.0,
+               (unsigned)sig_len);
+
+        // --- VERIFY ---
+        t0 = esp_timer_get_time();
+        OQS_STATUS r3 = OQS_SIG_verify(sig, msg, sizeof(msg), sig_out, sig_len, pk);
+        t1 = esp_timer_get_time();
+
+        printf("  verify:    %s   time = %.3f ms\n",
+               r3 == OQS_SUCCESS ? "OK" : "FAIL",
+               (t1 - t0) / 1000.0);
+
+        free(pk);
+        free(sk);
+        free(sig_out);
+        OQS_SIG_free(sig);
+    }
+
+    printf("=== ML-DSA benchmark END ===\n\n");
+}
+
+
 
 /* ===== GŁÓWNY BENCH ===== */
 
@@ -252,7 +321,9 @@ void app_main(void)
 
 
      // >>> TU DODAJEMY BENCHMARK ML-KEM <<<
-    bench_mlkem_all();
+    //bench_mlkem_all();
+
+    benchmark_ml_dsa();
 
     for (size_t a = 0; a < g_sig_algs_count; a++) {
 
