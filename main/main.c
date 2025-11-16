@@ -41,7 +41,7 @@ static const char *g_sig_algs[] = {
  
 };
 
-static const size_t g_sig_algs_count = sizeof(g_sig_algs) / sizeof(g_sig_algs[0]);
+//static const size_t g_sig_algs_count = sizeof(g_sig_algs) / sizeof(g_sig_algs[0]);
 
 /* ===== GLOBALNY STAN DLA TICKERA ===== */
 
@@ -374,6 +374,174 @@ static void benchmark_ml_dsa(void) {
 }
 
 
+/* ================== SLH-DSA / SPHINCS+ BENCHMARK (wszystkie warianty) ================== */
+
+typedef struct {
+    const char *nice_name;   // nazwa do logów / CSV
+    const char *oqs_id;      // identyfikator z liboqs (OQS_SIG_alg_...)
+} SlhDsaCase;
+
+static const SlhDsaCase slh_dsa_cases[] = {
+    /* SHA2 profile (SLH-DSA-SHA2) */
+    { "SLH-DSA-SHA2-128s",  OQS_SIG_alg_sphincs_sha2_128s_simple  },
+    { "SLH-DSA-SHA2-128f",  OQS_SIG_alg_sphincs_sha2_128f_simple  },
+    { "SLH-DSA-SHA2-192s",  OQS_SIG_alg_sphincs_sha2_192s_simple  },
+    { "SLH-DSA-SHA2-192f",  OQS_SIG_alg_sphincs_sha2_192f_simple  },
+    { "SLH-DSA-SHA2-256s",  OQS_SIG_alg_sphincs_sha2_256s_simple  },
+    { "SLH-DSA-SHA2-256f",  OQS_SIG_alg_sphincs_sha2_256f_simple  },
+
+    /* SHAKE profile (SLH-DSA-SHAKE) */
+    { "SLH-DSA-SHAKE-128s", OQS_SIG_alg_sphincs_shake_128s_simple },
+    { "SLH-DSA-SHAKE-128f", OQS_SIG_alg_sphincs_shake_128f_simple },
+    { "SLH-DSA-SHAKE-192s", OQS_SIG_alg_sphincs_shake_192s_simple },
+    { "SLH-DSA-SHAKE-192f", OQS_SIG_alg_sphincs_shake_192f_simple },
+    { "SLH-DSA-SHAKE-256s", OQS_SIG_alg_sphincs_shake_256s_simple },
+    { "SLH-DSA-SHAKE-256f", OQS_SIG_alg_sphincs_shake_256f_simple },
+};
+
+static const size_t SLH_DSA_CASES_COUNT =
+    sizeof(slh_dsa_cases) / sizeof(slh_dsa_cases[0]);
+
+static void bench_slh_dsa_all(void)
+{
+    printf("\n\n=== SLH-DSA / SPHINCS+ benchmark (wszystkie warianty NIST) ===\n");
+
+    const uint8_t message[] = MSG_TEXT;
+    size_t msg_len = strlen(MSG_TEXT);
+
+    for (size_t i = 0; i < SLH_DSA_CASES_COUNT; i++) {
+        const SlhDsaCase *c = &slh_dsa_cases[i];
+
+        printf("----- %s (%s) -----\n", c->nice_name, c->oqs_id);
+        fflush(stdout);
+
+        g_alg_name = c->nice_name;
+        g_phase    = PHASE_IDLE;
+        g_iter     = 0;
+        g_iter_max = 0;
+
+        OQS_SIG *sig = OQS_SIG_new(c->oqs_id);
+        if (sig == NULL) {
+            printf("  [SKIP] OQS_SIG_new(%s) failed – alg not enabled in liboqs.\n",
+                   c->oqs_id);
+            fflush(stdout);
+            continue;
+        }
+
+        uint8_t *pk      = malloc(sig->length_public_key);
+        uint8_t *sk      = malloc(sig->length_secret_key);
+        uint8_t *sig_buf = malloc(sig->length_signature);
+
+        if (!pk || !sk || !sig_buf) {
+            printf("  [ERR] malloc failed (pk/sk/sig_buf)\n");
+            fflush(stdout);
+            if (pk) free(pk);
+            if (sk) free(sk);
+            if (sig_buf) free(sig_buf);
+            OQS_SIG_free(sig);
+            g_phase = PHASE_IDLE;
+            g_iter = g_iter_max = 0;
+            continue;
+        }
+
+        uint64_t t_keygen = 0, t_sign = 0, t_verify = 0;
+        uint64_t t0, t1;
+        size_t sig_len = 0;
+        OQS_STATUS st;
+
+        /* ---------- KEYGEN ---------- */
+        g_phase    = PHASE_KEYGEN;
+        g_iter     = 1;
+        g_iter_max = 1;
+
+        t0 = esp_timer_get_time();
+        st = OQS_SIG_keypair(sig, pk, sk);
+        t1 = esp_timer_get_time();
+        t_keygen = t1 - t0;
+
+        printf("  keypair:   %s   time = %.3f ms\n",
+               st == OQS_SUCCESS ? "OK" : "FAIL",
+               t_keygen / 1000.0);
+        fflush(stdout);
+
+        if (st != OQS_SUCCESS) {
+            goto slh_cleanup_variant;
+        }
+
+        /* ---------- SIGN ---------- */
+        g_phase    = PHASE_SIGN;
+        g_iter     = 1;
+        g_iter_max = 1;
+
+        t0 = esp_timer_get_time();
+        st = OQS_SIG_sign(sig,
+                          sig_buf, &sig_len,
+                          message, msg_len,
+                          sk);
+        t1 = esp_timer_get_time();
+        t_sign = t1 - t0;
+
+        printf("  sign:      %s   time = %.3f ms (sig_len=%zu)\n",
+               st == OQS_SUCCESS ? "OK" : "FAIL",
+               t_sign / 1000.0,
+               sig_len);
+        fflush(stdout);
+
+        if (st != OQS_SUCCESS) {
+            goto slh_cleanup_variant;
+        }
+
+        /* ---------- VERIFY ---------- */
+        g_phase    = PHASE_VERIFY;
+        g_iter     = 1;
+        g_iter_max = 1;
+
+        t0 = esp_timer_get_time();
+        st = OQS_SIG_verify(sig,
+                            message, msg_len,
+                            sig_buf, sig_len,
+                            pk);
+        t1 = esp_timer_get_time();
+        t_verify = t1 - t0;
+
+        printf("  verify:    %s   time = %.3f ms\n",
+               st == OQS_SUCCESS ? "OK" : "FAIL",
+               t_verify / 1000.0);
+        fflush(stdout);
+
+        /* linia pod tabelę do artykułu */
+        printf("RESULT_SLHDSA;%s;keygen_ms=%.3f;sign_ms=%.3f;verify_ms=%.3f;"
+               "pk_bytes=%zu;sk_bytes=%zu;sig_bytes=%zu\n",
+               c->nice_name,
+               t_keygen / 1000.0,
+               t_sign   / 1000.0,
+               t_verify / 1000.0,
+               (size_t)sig->length_public_key,
+               (size_t)sig->length_secret_key,
+               (size_t)sig->length_signature);
+        fflush(stdout);
+
+slh_cleanup_variant:
+        free(pk);
+        free(sk);
+        free(sig_buf);
+        OQS_SIG_free(sig);
+
+        g_phase    = PHASE_IDLE;
+        g_iter     = 0;
+        g_iter_max = 0;
+    }
+
+    g_alg_name = "-";
+    g_phase    = PHASE_IDLE;
+    g_iter     = 0;
+    g_iter_max = 0;
+
+    printf("=== SLH-DSA benchmark END ===\n");
+    fflush(stdout);
+}
+
+
 
 /* ===== GŁÓWNY BENCH ===== */
 
@@ -398,8 +566,11 @@ void app_main(void)
      // >>> TU DODAJEMY BENCHMARK ML-KEM <<<
     //bench_mlkem_all();
 
-    benchmark_ml_dsa();
+    //benchmark_ml_dsa();
 
+    bench_slh_dsa_all();       // NOWY: wszystkie warianty SLH-DSA / SPHINCS+
+
+    /*
     for (size_t a = 0; a < g_sig_algs_count; a++) {
 
         const char *alg_id = g_sig_algs[a];
@@ -425,7 +596,7 @@ void app_main(void)
             continue;
         }
 
-        /* --- KEYGEN --- */
+        // --- KEYGEN --- 
         g_phase = PHASE_KEYGEN;
         g_iter = 0;
         g_iter_max = NUM_KEYGEN_ITERS;
@@ -446,7 +617,7 @@ void app_main(void)
         double keygen_ms = (double)t_keygen_total / 1000.0 / NUM_KEYGEN_ITERS;
         ESP_LOGI(TAG, "%s: avg keygen time: %.3f ms", alg_id, keygen_ms);
 
-        /* --- SIGN --- */
+        // --- SIGN --- 
         g_phase = PHASE_SIGN;
         g_iter = 0;
         g_iter_max = NUM_SIGN_ITERS;
@@ -472,7 +643,7 @@ void app_main(void)
         double sign_ms = (double)t_sign_total / 1000.0 / NUM_SIGN_ITERS;
         ESP_LOGI(TAG, "%s: avg sign time: %.3f ms (sig_len=%zu)", alg_id, sign_ms, sig_len);
 
-        /* --- VERIFY --- */
+        // --- VERIFY --- 
         g_phase = PHASE_VERIFY;
         g_iter = 0;
         g_iter_max = NUM_VERIFY_ITERS;
@@ -496,7 +667,7 @@ void app_main(void)
         double verify_ms = (double)t_verify_total / 1000.0 / NUM_VERIFY_ITERS;
         ESP_LOGI(TAG, "%s: avg verify time: %.3f ms", alg_id, verify_ms);
 
-        /* --- LOG POD TABELĘ DO ARTYKUŁU (jedna linia CSV) --- */
+        // --- LOG POD TABELĘ DO ARTYKUŁU (jedna linia CSV) --- 
         printf("\nRESULT_SIG;%s;keygen_ms=%.3f;sign_ms=%.3f;verify_ms=%.3f;"
                "pk_bytes=%zu;sk_bytes=%zu;sig_bytes=%zu\n",
                alg_id,
@@ -505,7 +676,7 @@ void app_main(void)
                (size_t)sig->length_secret_key,
                (size_t)sig->length_signature);
 
-        /* sprzątanie */
+        // sprzątanie 
         free(pk);
         free(sk);
         free(sig_buf);
@@ -516,7 +687,11 @@ void app_main(void)
         g_iter_max = 0;
     }
 
+    */
+
     g_all_done = 1;
+
+
 
     // żeby główne zadanie nie padło
     while (1) {
