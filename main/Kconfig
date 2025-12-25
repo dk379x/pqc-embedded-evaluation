@@ -20,4 +20,16 @@ config PQC_RUN_ITERS
     int "Measured iterations (N)"
     default 100
 
+config PQC_LOG_CSV
+    bool "Log CSV output"
+    default y
+
+config PQC_LOG_VISUAL
+    bool "Log human-readable output"
+    default y
+
+config PQC_LOG_EVERY
+    int "Log every N runs"
+    default 1
+
 endmenu

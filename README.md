@@ -83,7 +83,8 @@ main/
 
 All benchmarks and logging options are configured via:
 
-```bash
+
+bash
 idf.py menuconfig
 
 Available options include:
