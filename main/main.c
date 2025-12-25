@@ -561,6 +561,7 @@ void app_main(void)
 
 
     printf("ESP32 PQC Benchmark by dk379x\n");
+    printf("pqc-embedded-evaluation | ESP32-C6 | liboqs\n");
 
     const int warmup = CONFIG_PQC_WARMUP_ITERS;
     const int runs   = CONFIG_PQC_RUN_ITERS;
