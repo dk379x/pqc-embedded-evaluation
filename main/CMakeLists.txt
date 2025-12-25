@@ -1,3 +1,12 @@
-idf_component_register(SRCS "main.c"
-                    INCLUDE_DIRS ""
-                    REQUIRES esp_timer liboqs)                    
+idf_component_register(
+    SRCS
+        "main.c"
+        "bench/mlkem/bench_mlkem.c"
+    INCLUDE_DIRS
+        ""
+        "bench"
+        "bench/mlkem"
+    REQUIRES
+        esp_timer
+        liboqs
+    )                    

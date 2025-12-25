@@ -1,0 +1,23 @@
+menu "PQC Benchmarks"
+
+config PQC_RUN_MLKEM
+    bool "Run ML-KEM benchmark"
+    default y
+
+config PQC_RUN_MLDSA
+    bool "Run ML-DSA benchmark"
+    default n
+
+config PQC_RUN_SLHDSA
+    bool "Run SLH-DSA benchmark"
+    default n
+
+config PQC_WARMUP_ITERS
+    int "Warm-up iterations"
+    default 5
+
+config PQC_RUN_ITERS
+    int "Measured iterations (N)"
+    default 100
+
+endmenu

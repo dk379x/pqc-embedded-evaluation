@@ -19,29 +19,15 @@
 
 #include <oqs.h>
 
+#include "bench/mlkem/bench_mlkem.h"
+
 static const char *TAG = "PQC_BENCH";
 
 /* ===== KONFIG BENCHMARKU ===== */
 
 #define MSG_TEXT            "Hello PQ world!"
-#define NUM_KEYGEN_ITERS    1      // na start po 1
-#define NUM_SIGN_ITERS      1
-#define NUM_VERIFY_ITERS    1
-
-// TESTOWANE ALGORYTMY
-static const char *g_sig_algs[] = {
-    // NIST ML-DSA (Dilithium)
-    // OQS_SIG_alg_ml_dsa_44,
-    // OQS_SIG_alg_ml_dsa_65,
-    // OQS_SIG_alg_ml_dsa_87,
 
 
-    OQS_SIG_alg_sphincs_shake_128s_simple,
-    OQS_SIG_alg_sphincs_shake_256s_simple,
- 
-};
-
-//static const size_t g_sig_algs_count = sizeof(g_sig_algs) / sizeof(g_sig_algs[0]);
 
 /* ===== GLOBALNY STAN DLA TICKERA ===== */
 
@@ -107,7 +93,7 @@ static uint64_t measure_us(uint64_t (*func)(void *), void *ctx)
 
 
 /* ================== ML-KEM BENCHMARK (wszystkie warianty) ================== */
-
+/*
 typedef struct {
     const char *name;      // nazwa do logów
     const char *oqs_id;    // identyfikator z liboqs, np. OQS_KEM_alg_ml_kem_768
@@ -150,7 +136,7 @@ static void bench_mlkem_variant(const KemCase *c)
     uint64_t t_enc_us    = 0;
     uint64_t t_dec_us    = 0;
 
-    /* --- KEYGEN --- */
+     --- KEYGEN --- 
     for (uint32_t i = 0; i < c->iters_keygen; i++) {
         uint64_t t0 = esp_timer_get_time();
         OQS_STATUS rc = OQS_KEM_keypair(kem, public_key, secret_key);
@@ -163,7 +149,7 @@ static void bench_mlkem_variant(const KemCase *c)
         }
     }
 
-    /* --- ENC --- */
+     --- ENC --- 
     for (uint32_t i = 0; i < c->iters_enc; i++) {
         uint64_t t0 = esp_timer_get_time();
         OQS_STATUS rc = OQS_KEM_encaps(kem, ciphertext, ss_enc, public_key);
@@ -176,7 +162,7 @@ static void bench_mlkem_variant(const KemCase *c)
         }
     }
 
-    /* --- DEC --- */
+     --- DEC --- 
     for (uint32_t i = 0; i < c->iters_dec; i++) {
         uint64_t t0 = esp_timer_get_time();
         OQS_STATUS rc = OQS_KEM_decaps(kem, ss_dec, ciphertext, secret_key);
@@ -189,7 +175,7 @@ static void bench_mlkem_variant(const KemCase *c)
         }
     }
 
-    /* correctness na ostatnim sec vec */
+     correctness na ostatnim sec vec 
     if (memcmp(ss_enc, ss_dec, kem->length_shared_secret) != 0) {
         printf("  [ERR] shared secret mismatch!\n");
         goto cleanup;
@@ -228,7 +214,7 @@ static void bench_mlkem_all(void)
     }
     printf("=== ML-KEM benchmark DONE ===\n");
 }
-
+*/
 
 /* ================== ML-DSA BENCHMARK (wszystkie warianty) ================== */
 
@@ -547,9 +533,9 @@ slh_cleanup_variant:
 
 void app_main(void)
 {
-    printf("ESP32 PQC Benchmark by dk379x\n");
+    //printf("ESP32 PQC Benchmark by dk379x\n");
 
-    g_t0_us = esp_timer_get_time();
+    /*g_t0_us = esp_timer_get_time();
     g_alg_name = "-";
     g_phase = PHASE_IDLE;
     g_iter = 0;
@@ -562,135 +548,41 @@ void app_main(void)
     const uint8_t message[] = MSG_TEXT;
     size_t msg_len = strlen(MSG_TEXT);
 
-
+    */
      // >>> TU DODAJEMY BENCHMARK ML-KEM <<<
     //bench_mlkem_all();
 
     //benchmark_ml_dsa();
 
-    bench_slh_dsa_all();       // NOWY: wszystkie warianty SLH-DSA / SPHINCS+
+    //bench_slh_dsa_all();       // NOWY: wszystkie warianty SLH-DSA / SPHINCS+
 
-    /*
-    for (size_t a = 0; a < g_sig_algs_count; a++) {
 
-        const char *alg_id = g_sig_algs[a];
-        g_alg_name = alg_id;
-        ESP_LOGI(TAG, "\n==============================");
-        ESP_LOGI(TAG, "Benchmarking signature alg: %s", alg_id);
-        ESP_LOGI(TAG, "==============================");
+    //g_all_done = 1;
 
-        OQS_SIG *sig = OQS_SIG_new(alg_id);
-        if (sig == NULL) {
-            ESP_LOGE(TAG, "OQS_SIG_new(%s) failed, skipping", alg_id);
-            continue;
-        }
 
-        uint8_t *pk  = malloc(sig->length_public_key);
-        uint8_t *sk  = malloc(sig->length_secret_key);
-        uint8_t *sig_buf = malloc(sig->length_signature);
+    printf("ESP32 PQC Benchmark by dk379x\n");
 
-        if (!pk || !sk || !sig_buf) {
-            ESP_LOGE(TAG, "malloc failed for %s, skipping", alg_id);
-            free(pk); free(sk); free(sig_buf);
-            OQS_SIG_free(sig);
-            continue;
-        }
+    const int warmup = CONFIG_PQC_WARMUP_ITERS;
+    const int runs   = CONFIG_PQC_RUN_ITERS;
 
-        // --- KEYGEN --- 
-        g_phase = PHASE_KEYGEN;
-        g_iter = 0;
-        g_iter_max = NUM_KEYGEN_ITERS;
+#if CONFIG_PQC_RUN_MLKEM
+    printf("\n[RUN] ML-KEM\n");
+    bench_mlkem_all_full(warmup, runs);
+#endif
 
-        uint64_t t_keygen_total = 0;
-        for (uint32_t i = 0; i < NUM_KEYGEN_ITERS; i++) {
-            g_iter = i + 1;
-            uint64_t t0 = esp_timer_get_time();
-            OQS_STATUS st = OQS_SIG_keypair(sig, pk, sk);
-            uint64_t t1 = esp_timer_get_time();
+#if CONFIG_PQC_RUN_MLDSA
+    printf("\n[RUN] ML-DSA\n");
+    // bench_mldsa_all_full(warmup, runs);
+#endif
 
-            if (st != OQS_SUCCESS) {
-                ESP_LOGE(TAG, "keypair failed on iter %u", i);
-                break;
-            }
-            t_keygen_total += (t1 - t0);
-        }
-        double keygen_ms = (double)t_keygen_total / 1000.0 / NUM_KEYGEN_ITERS;
-        ESP_LOGI(TAG, "%s: avg keygen time: %.3f ms", alg_id, keygen_ms);
+#if CONFIG_PQC_RUN_SLHDSA
+    printf("\n[RUN] SLH-DSA\n");
+    // bench_slhdsa_all();
+#endif
 
-        // --- SIGN --- 
-        g_phase = PHASE_SIGN;
-        g_iter = 0;
-        g_iter_max = NUM_SIGN_ITERS;
+    printf("\nAll enabled benchmarks finished.\n");
 
-        uint64_t t_sign_total = 0;
-        size_t sig_len = 0;
-
-        for (uint32_t i = 0; i < NUM_SIGN_ITERS; i++) {
-            g_iter = i + 1;
-            uint64_t t0 = esp_timer_get_time();
-            OQS_STATUS st = OQS_SIG_sign(sig,
-                                         sig_buf, &sig_len,
-                                         message, msg_len,
-                                         sk);
-            uint64_t t1 = esp_timer_get_time();
-
-            if (st != OQS_SUCCESS) {
-                ESP_LOGE(TAG, "sign failed on iter %u", i);
-                break;
-            }
-            t_sign_total += (t1 - t0);
-        }
-        double sign_ms = (double)t_sign_total / 1000.0 / NUM_SIGN_ITERS;
-        ESP_LOGI(TAG, "%s: avg sign time: %.3f ms (sig_len=%zu)", alg_id, sign_ms, sig_len);
-
-        // --- VERIFY --- 
-        g_phase = PHASE_VERIFY;
-        g_iter = 0;
-        g_iter_max = NUM_VERIFY_ITERS;
-
-        uint64_t t_verify_total = 0;
-        for (uint32_t i = 0; i < NUM_VERIFY_ITERS; i++) {
-            g_iter = i + 1;
-            uint64_t t0 = esp_timer_get_time();
-            OQS_STATUS st = OQS_SIG_verify(sig,
-                                           message, msg_len,
-                                           sig_buf, sig_len,
-                                           pk);
-            uint64_t t1 = esp_timer_get_time();
-
-            if (st != OQS_SUCCESS) {
-                ESP_LOGE(TAG, "verify FAILED on iter %u", i);
-                break;
-            }
-            t_verify_total += (t1 - t0);
-        }
-        double verify_ms = (double)t_verify_total / 1000.0 / NUM_VERIFY_ITERS;
-        ESP_LOGI(TAG, "%s: avg verify time: %.3f ms", alg_id, verify_ms);
-
-        // --- LOG POD TABELĘ DO ARTYKUŁU (jedna linia CSV) --- 
-        printf("\nRESULT_SIG;%s;keygen_ms=%.3f;sign_ms=%.3f;verify_ms=%.3f;"
-               "pk_bytes=%zu;sk_bytes=%zu;sig_bytes=%zu\n",
-               alg_id,
-               keygen_ms, sign_ms, verify_ms,
-               (size_t)sig->length_public_key,
-               (size_t)sig->length_secret_key,
-               (size_t)sig->length_signature);
-
-        // sprzątanie 
-        free(pk);
-        free(sk);
-        free(sig_buf);
-        OQS_SIG_free(sig);
-
-        g_phase = PHASE_IDLE;
-        g_iter = 0;
-        g_iter_max = 0;
-    }
-
-    */
-
-    g_all_done = 1;
-
+    while (1) vTaskDelay(pdMS_TO_TICKS(1000));
 
 
     // żeby główne zadanie nie padło
