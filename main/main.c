@@ -20,6 +20,7 @@
 #include <oqs.h>
 
 #include "bench/mlkem/bench_mlkem.h"
+#include "bench/mldsa/bench_mldsa.h"
 
 static const char *TAG = "PQC_BENCH";
 
@@ -89,149 +90,6 @@ static uint64_t measure_us(uint64_t (*func)(void *), void *ctx)
     (void)func;
     (void)ctx;
     return 0;
-}
-
-/* ================== ML-DSA BENCHMARK (wszystkie warianty) ================== */
-
-static const char *ml_dsa_algs[] = {
-    "ML-DSA-44",
-    "ML-DSA-65",
-    "ML-DSA-87"
-};
-static const size_t ml_dsa_count = sizeof(ml_dsa_algs) / sizeof(ml_dsa_algs[0]);
-
-
-static void benchmark_ml_dsa(void) {
-    printf("\n=== ML-DSA benchmark START ===\n");
-
-    for (size_t i = 0; i < ml_dsa_count; i++) {
-        const char *alg = ml_dsa_algs[i];
-
-        printf("----- ML-DSA variant: %s -----\n", alg);
-        fflush(stdout);
-
-        g_alg_name = alg;
-        g_phase    = PHASE_IDLE;
-        g_iter     = 0;
-        g_iter_max = 0;
-
-        OQS_SIG *sig = OQS_SIG_new(alg);
-        if (sig == NULL) {
-            printf("  [SKIP] OQS_SIG_new(%s) failed – algorithm not enabled\n", alg);
-            fflush(stdout);
-            continue;
-        }
-
-        uint8_t *pk      = malloc(sig->length_public_key);
-        uint8_t *sk      = malloc(sig->length_secret_key);
-        uint8_t *sig_out = malloc(sig->length_signature);
-        const uint8_t msg[] = "Test message for ML-DSA benchmark";
-        size_t sig_len = 0;
-
-        if (!pk || !sk || !sig_out) {
-            printf("  [FAIL] malloc failed (pk/sk/sig_out)\n");
-            fflush(stdout);
-            free(pk);
-            free(sk);
-            free(sig_out);
-            OQS_SIG_free(sig);
-            continue;
-        }
-
-        uint64_t t0, t1;
-        OQS_STATUS r1, r2, r3;
-
-        /* ---------- KEYGEN ---------- */
-        g_phase    = PHASE_KEYGEN;
-        g_iter     = 1;
-        g_iter_max = 1;
-
-        t0 = esp_timer_get_time();
-        r1 = OQS_SIG_keypair(sig, pk, sk);
-        t1 = esp_timer_get_time();
-
-        printf("  keypair:   %s   time = %.3f ms\n",
-               r1 == OQS_SUCCESS ? "OK" : "FAIL",
-               (t1 - t0) / 1000.0);
-        fflush(stdout);
-
-        if (r1 != OQS_SUCCESS) {
-            printf("  -> aborting this variant after keypair failure\n");
-            fflush(stdout);
-            free(pk);
-            free(sk);
-            free(sig_out);
-            OQS_SIG_free(sig);
-            g_phase = PHASE_IDLE;
-            continue;
-        }
-
-        /* ---------- SIGN ---------- */
-        g_phase    = PHASE_SIGN;
-        g_iter     = 1;
-        g_iter_max = 1;
-
-        t0 = esp_timer_get_time();
-        r2 = OQS_SIG_sign(sig,
-                          sig_out,
-                          &sig_len,
-                          msg,
-                          strlen((const char *)msg),
-                          sk);
-        t1 = esp_timer_get_time();
-
-        printf("  sign:      %s   time = %.3f ms (sig len = %u)\n",
-               r2 == OQS_SUCCESS ? "OK" : "FAIL",
-               (t1 - t0) / 1000.0,
-               (unsigned)sig_len);
-        fflush(stdout);
-
-        if (r2 != OQS_SUCCESS) {
-            printf("  -> aborting this variant after sign failure\n");
-            fflush(stdout);
-            free(pk);
-            free(sk);
-            free(sig_out);
-            OQS_SIG_free(sig);
-            g_phase = PHASE_IDLE;
-            continue;
-        }
-
-        /* ---------- VERIFY ---------- */
-        g_phase    = PHASE_VERIFY;
-        g_iter     = 1;
-        g_iter_max = 1;
-
-        t0 = esp_timer_get_time();
-        r3 = OQS_SIG_verify(sig,
-                            msg, strlen((const char *)msg),
-                            sig_out, sig_len,
-                            pk);
-        t1 = esp_timer_get_time();
-
-        printf("  verify:    %s   time = %.3f ms\n",
-               r3 == OQS_SUCCESS ? "OK" : "FAIL",
-               (t1 - t0) / 1000.0);
-        fflush(stdout);
-
-        /* ---------- CLEANUP ---------- */
-        free(pk);
-        free(sk);
-        free(sig_out);
-        OQS_SIG_free(sig);
-
-        g_phase    = PHASE_IDLE;
-        g_iter     = 0;
-        g_iter_max = 0;
-    }
-
-    g_alg_name = "-";
-    g_phase    = PHASE_IDLE;
-    g_iter     = 0;
-    g_iter_max = 0;
-
-    printf("=== ML-DSA benchmark END ===\n\n");
-    fflush(stdout);
 }
 
 
@@ -448,7 +306,7 @@ void app_main(void)
 
 #if CONFIG_PQC_RUN_MLDSA
     printf("\n[RUN] ML-DSA\n");
-    // bench_mldsa_all_full(warmup, runs);
+    bench_mldsa_all_full(warmup, runs);
 #endif
 
 #if CONFIG_PQC_RUN_SLHDSA
@@ -460,11 +318,6 @@ void app_main(void)
 
     while (1) vTaskDelay(pdMS_TO_TICKS(1000));
 
-
-    // żeby główne zadanie nie padło
-    while (1) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
 }
 
  
