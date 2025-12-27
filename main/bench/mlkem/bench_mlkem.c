@@ -10,6 +10,12 @@
 #include "esp_timer.h"
 #include "esp_heap_caps.h"
 
+/* Optional: stack high-water (RAM) */
+#ifdef CONFIG_PQC_MEASURE_STACK
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#endif
+
 #include <oqs.h>
 
 /* ================= ML-KEM CASES ================= */
