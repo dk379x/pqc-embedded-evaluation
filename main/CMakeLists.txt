@@ -3,11 +3,13 @@ idf_component_register(
         "main.c"
         "bench/mlkem/bench_mlkem.c"
         "bench/mldsa/bench_mldsa.c"
+        "bench/slhdsa/bench_slhdsa.c"
     INCLUDE_DIRS
         ""
         "bench"
         "bench/mlkem"
         "bench/mldsa"
+        "bench/slhdsa"
     REQUIRES
         esp_timer
         liboqs
