@@ -29,14 +29,14 @@ typedef struct {
 /* NIST SLH-DSA / SPHINCS+ (simple) – zgodnie z Twoją listą */
 static const slhdsa_case_t g_cases[] = {
     /* SHA2 profile */
-    /*{ "SLH-DSA-SHA2-128s",  OQS_SIG_alg_sphincs_sha2_128s_simple  },
+    { "SLH-DSA-SHA2-128s",  OQS_SIG_alg_sphincs_sha2_128s_simple  },
     { "SLH-DSA-SHA2-128f",  OQS_SIG_alg_sphincs_sha2_128f_simple  },
     { "SLH-DSA-SHA2-192s",  OQS_SIG_alg_sphincs_sha2_192s_simple  },
     { "SLH-DSA-SHA2-192f",  OQS_SIG_alg_sphincs_sha2_192f_simple  },
     { "SLH-DSA-SHA2-256s",  OQS_SIG_alg_sphincs_sha2_256s_simple  },
     { "SLH-DSA-SHA2-256f",  OQS_SIG_alg_sphincs_sha2_256f_simple  },
-    */
-   
+    
+
     /* SHAKE profile */
     { "SLH-DSA-SHAKE-128s", OQS_SIG_alg_sphincs_shake_128s_simple },
     { "SLH-DSA-SHAKE-128f", OQS_SIG_alg_sphincs_shake_128f_simple },
