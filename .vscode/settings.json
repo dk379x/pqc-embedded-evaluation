@@ -9,11 +9,12 @@
     "api.h": "c"
   },
   "idf.pythonInstallPath": "/usr/bin/python3",
-  "idf.port": "/dev/tty.usbmodem5AAF2553501",
+  "idf.port": "/dev/tty.usbserial-110",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32c6"
   },
   "idf.openOcdConfigs": [
     "board/esp32c6-builtin.cfg"
-  ]
+  ],
+  "idf.currentSetup": "/Users/danielkarcz/esp/v5.5.1/esp-idf"
 }
