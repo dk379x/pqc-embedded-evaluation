@@ -19,10 +19,13 @@
 
 #include <oqs.h>
 
+// BENCH
 #include "bench/mlkem/bench_mlkem.h"
 #include "bench/mldsa/bench_mldsa.h"
 #include "bench/slhdsa/bench_slhdsa.h"
 
+// MEASURE
+#include "measure/ppk2_trigger.h"
 
 void app_main(void)
 {
@@ -47,6 +50,22 @@ void app_main(void)
     printf("\n[RUN] SLH-DSA\n");
     bench_slhdsa_all_full(0, 1);
 #endif
+
+    ppk2_trigger_init();
+
+    printf("\n[MEAS] Idle baseline measurement started\n");
+
+    while (1)
+    {
+
+        ppk2_trigger_start();
+
+        vTaskDelay(pdMS_TO_TICKS(2500));
+
+        ppk2_trigger_stop();
+        
+        vTaskDelay(pdMS_TO_TICKS(2500));
+    }
 
     printf("\nAll enabled benchmarks finished.\n");
 

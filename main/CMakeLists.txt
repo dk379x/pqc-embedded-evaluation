@@ -4,13 +4,16 @@ idf_component_register(
         "bench/mlkem/bench_mlkem.c"
         "bench/mldsa/bench_mldsa.c"
         "bench/slhdsa/bench_slhdsa.c"
+        "measure/ppk2_trigger.c"
     INCLUDE_DIRS
         ""
         "bench"
         "bench/mlkem"
         "bench/mldsa"
         "bench/slhdsa"
+        "measure"
     REQUIRES
+        esp_driver_gpio
         esp_timer
         liboqs
     )                    
