@@ -58,12 +58,12 @@ void app_main(void)
     while (1)
     {
 
-        ppk2_trigger_start();
+        /*ppk2_trigger_start();
 
         vTaskDelay(pdMS_TO_TICKS(2500));
 
-        ppk2_trigger_stop();
-        
+        ppk2_trigger_stop();*/
+
         vTaskDelay(pdMS_TO_TICKS(2500));
     }
 
