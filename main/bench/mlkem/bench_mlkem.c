@@ -197,22 +197,24 @@ static void bench_one_mlkem_case(const KemCase *c,
     UPDATE_CASE_MINIMA();
 
     /* ================= KEYGEN ================= */
+#if CONFIG_PQC_MLKEM_KEYGEN
 
     for (int i = 0; i < warmup_iters; i++) {
-#if CONFIG_POWER_MODE_MLKEM
-#if CONFIG_POWER_MLKEM_KEYGEN
-        ppk2_trigger_start();
+
         (void)OQS_KEM_keypair(kem, pk, sk);
-        ppk2_trigger_stop();
-#endif //CONFIG_POWER_MLKEM_KEYGEN
-#endif// CONFIG_POWER_MODE_MLKEM
     }
 
     for (int i = 0; i < run_iters; i++) {
         uint32_t heap_before = (uint32_t)heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
 
         uint64_t t0 = esp_timer_get_time();
+#if CONFIG_POWER_MODE_MLKEM
+#if CONFIG_POWER_MLKEM_KEYGEN
+        ppk2_trigger_start();
         OQS_STATUS st = OQS_KEM_keypair(kem, pk, sk);
+        ppk2_trigger_stop();
+#endif //CONFIG_POWER_MLKEM_KEYGEN
+#endif// CONFIG_POWER_MODE_MLKEM
         uint64_t t1 = esp_timer_get_time();
 
         uint32_t heap_after = (uint32_t)heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
@@ -231,8 +233,9 @@ static void bench_one_mlkem_case(const KemCase *c,
             goto cleanup;
         }
     }
-
+#endif// PQC_MLKEM_KEYGEN
     /* ================= ENCAP ================= */
+#if CONFIG_PQC_MLKEM_ENCAP
 
     for (int i = 0; i < warmup_iters; i++) {
         (void)OQS_KEM_encaps(kem, ct, ss1, pk);
@@ -261,8 +264,9 @@ static void bench_one_mlkem_case(const KemCase *c,
             goto cleanup;
         }
     }
-
+#endif// PQC_MLKEM_ENCAP
     /* ================= DECAP ================= */
+#if CONFIG_PQC_MLKEM_DECAP
 
     for (int i = 0; i < warmup_iters; i++) {
         (void)OQS_KEM_decaps(kem, ss2, ct, sk);
@@ -299,6 +303,8 @@ static void bench_one_mlkem_case(const KemCase *c,
 
     /* case summary */
     log_case_summary(c->name, heap_min_case, heap_largest_free_min_case);
+
+#endif// PQC_MLKEM_DECAP
 
 cleanup:
     free(pk);

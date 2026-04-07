@@ -19,6 +19,21 @@ config PQC_RUN_MLKEM
             bool "NIST Level 5 (ML-KEM-1024)"
     endchoice
 
+config PQC_MLKEM_KEYGEN
+    bool "Key generation"
+    default y
+    depends on PQC_RUN_MLKEM
+
+config PQC_MLKEM_ENCAP
+    bool "Encapsulation"
+    default y
+    depends on PQC_RUN_MLKEM
+
+config PQC_MLKEM_DECAP
+    bool "Decapsulation"
+    default y
+    depends on PQC_RUN_MLKEM
+
 config PQC_RUN_MLDSA
     bool "Run ML-DSA benchmark"
     default n
