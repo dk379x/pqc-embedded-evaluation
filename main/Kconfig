@@ -48,3 +48,36 @@ config PQC_LOG_EVERY
     default 1
 
 endmenu
+
+menu "Power Measurement"
+
+    choice POWER_MEASUREMENT
+        prompt "Measurement mode"
+        default POWER_MODE_IDLE
+
+        config POWER_MODE_IDLE
+            bool "Idle"
+
+        config POWER_MODE_EMPTY_CONTROL
+            bool "Empty Control Window"
+
+        config POWER_MODE_MLKEM
+            bool "ML-KEM operation"
+    endchoice
+
+    choice POWER_MLKEM_OPERATION
+        prompt "ML-KEM operation"
+        default POWER_MLKEM_ENCAP
+        depends on POWER_MODE_MLKEM
+
+        config POWER_MLKEM_KEYGEN
+            bool "Keygen"
+
+        config POWER_MLKEM_ENCAP
+            bool "Encap"
+
+        config POWER_MLKEM_DECAP
+            bool "Decap"
+    endchoice
+
+endmenu

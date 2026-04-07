@@ -18,6 +18,9 @@
 
 #include <oqs.h>
 
+// MEASURE
+#include "../../measure/ppk2_trigger.h"
+
 /* ================= ML-KEM CASES ================= */
 
 typedef struct {
@@ -196,7 +199,13 @@ static void bench_one_mlkem_case(const KemCase *c,
     /* ================= KEYGEN ================= */
 
     for (int i = 0; i < warmup_iters; i++) {
+#if CONFIG_POWER_MODE_MLKEM
+#if CONFIG_POWER_MLKEM_KEYGEN
+        ppk2_trigger_start();
         (void)OQS_KEM_keypair(kem, pk, sk);
+        ppk2_trigger_stop();
+#endif //CONFIG_POWER_MLKEM_KEYGEN
+#endif// CONFIG_POWER_MODE_MLKEM
     }
 
     for (int i = 0; i < run_iters; i++) {

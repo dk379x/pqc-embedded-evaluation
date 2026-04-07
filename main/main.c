@@ -36,6 +36,9 @@ void app_main(void)
     const int warmup = CONFIG_PQC_WARMUP_ITERS;
     const int runs   = CONFIG_PQC_RUN_ITERS;
 
+    ppk2_trigger_init();
+    printf("\n[MEAS] PPK2 trigger initialized\n");
+
 #if CONFIG_PQC_RUN_MLKEM
     printf("\n[RUN] ML-KEM\n");
     bench_mlkem_all_full(warmup, runs);
@@ -51,9 +54,15 @@ void app_main(void)
     bench_slhdsa_all_full(0, 1);
 #endif
 
-    ppk2_trigger_init();
+#if CONFIG_POWER_MODE_IDLE
 
-    printf("\n[MEAS] PPK2 trigger initialized\n");
+    printf("[MEAS] Idle baseline measurement started\n");
+    while (1) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+#endif
+
+#if CONFIG_POWER_MODE_EMPTY_CONTROL
 
     vTaskDelay(pdMS_TO_TICKS(10000));
 
@@ -64,18 +73,14 @@ void app_main(void)
     ppk2_trigger_stop();
 
     printf("\n[MEAS] Empty control window measurement stopped\n");
+#endif
 
+    /*
     while (1)
     {
-
-        /*ppk2_trigger_start();
-
-        vTaskDelay(pdMS_TO_TICKS(2500));
-
-        ppk2_trigger_stop();*/
-
         vTaskDelay(pdMS_TO_TICKS(2500));
     }
+    */
 
     printf("\nAll enabled benchmarks finished.\n");
 
