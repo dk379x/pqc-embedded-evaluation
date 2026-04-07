@@ -4,6 +4,21 @@ config PQC_RUN_MLKEM
     bool "Run ML-KEM benchmark"
     default y
 
+    choice MLKEM_SECURITY_LEVEL
+        prompt "ML-KEM security level"
+        default MLKEM_LEVEL_768
+        depends on PQC_RUN_MLKEM
+
+        config MLKEM_LEVEL_512
+            bool "NIST Level 1 (ML-KEM-512)"
+
+        config MLKEM_LEVEL_768
+            bool "NIST Level 3 (ML-KEM-768)"
+
+        config MLKEM_LEVEL_1024
+            bool "NIST Level 5 (ML-KEM-1024)"
+    endchoice
+
 config PQC_RUN_MLDSA
     bool "Run ML-DSA benchmark"
     default n
