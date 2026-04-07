@@ -53,7 +53,17 @@ void app_main(void)
 
     ppk2_trigger_init();
 
-    printf("\n[MEAS] Idle baseline measurement started\n");
+    printf("\n[MEAS] PPK2 trigger initialized\n");
+
+    vTaskDelay(pdMS_TO_TICKS(10000));
+
+    printf("\n[MEAS] Empty control window measurement started\n");
+
+    ppk2_trigger_start();
+    for (volatile int i = 0; i < 1000; i++) {}
+    ppk2_trigger_stop();
+
+    printf("\n[MEAS] Empty control window measurement stopped\n");
 
     while (1)
     {
