@@ -211,7 +211,11 @@ static void bench_one_mlkem_case(const KemCase *c,
 #if CONFIG_POWER_MODE_MLKEM
 #if CONFIG_POWER_MLKEM_KEYGEN
         ppk2_trigger_start();
+#endif //CONFIG_POWER_MLKEM_KEYGEN
+#endif// CONFIG_POWER_MODE_MLKEM
         OQS_STATUS st = OQS_KEM_keypair(kem, pk, sk);
+#if CONFIG_POWER_MODE_MLKEM
+#if CONFIG_POWER_MLKEM_KEYGEN
         ppk2_trigger_stop();
 #endif //CONFIG_POWER_MLKEM_KEYGEN
 #endif// CONFIG_POWER_MODE_MLKEM
@@ -245,7 +249,17 @@ static void bench_one_mlkem_case(const KemCase *c,
         uint32_t heap_before = (uint32_t)heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
 
         uint64_t t0 = esp_timer_get_time();
+#if CONFIG_POWER_MODE_MLKEM
+#if CONFIG_POWER_MLKEM_ENCAP
+        ppk2_trigger_start();
+#endif //CONFIG_POWER_MLKEM_ENCAP
+#endif// CONFIG_POWER_MODE_MLKEM
         OQS_STATUS st = OQS_KEM_encaps(kem, ct, ss1, pk);
+#if CONFIG_POWER_MODE_MLKEM
+#if CONFIG_POWER_MLKEM_ENCAP
+        ppk2_trigger_stop();
+#endif //CONFIG_POWER_MLKEM_ENCAP
+#endif// CONFIG_POWER_MODE_MLKEM
         uint64_t t1 = esp_timer_get_time();
 
         uint32_t heap_after = (uint32_t)heap_caps_get_free_size(MALLOC_CAP_DEFAULT);

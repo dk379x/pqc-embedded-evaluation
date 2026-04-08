@@ -86,13 +86,13 @@ menu "Power Measurement"
         depends on POWER_MODE_MLKEM
 
         config POWER_MLKEM_KEYGEN
-            bool "Keygen"
+            bool "Key generation"
 
         config POWER_MLKEM_ENCAP
-            bool "Encap"
+            bool "Encapsulation"
 
         config POWER_MLKEM_DECAP
-            bool "Decap"
+            bool "Decapsulation"
     endchoice
 
 endmenu
