@@ -282,15 +282,42 @@ static void bench_one_mlkem_case(const KemCase *c,
     /* ================= DECAP ================= */
 #if CONFIG_PQC_MLKEM_DECAP
 
+
+// ===== INVALID ct ==========================
+
+    uint8_t *ct_bad = malloc(kem->length_ciphertext);
+    if (ct_bad == NULL)
+    {
+        log_fail(c->name, "alloc_ct_bad_failed");
+        goto cleanup;
+    }
+
+    memcpy(ct_bad, ct, kem->length_ciphertext);
+    ct_bad[0] ^= 0x01;
+
+    //===========================
+
+
     for (int i = 0; i < warmup_iters; i++) {
         (void)OQS_KEM_decaps(kem, ss2, ct, sk);
     }
+
 
     for (int i = 0; i < run_iters; i++) {
         uint32_t heap_before = (uint32_t)heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
 
         uint64_t t0 = esp_timer_get_time();
+#if CONFIG_POWER_MODE_MLKEM
+#if CONFIG_POWER_MLKEM_DECAP
+        ppk2_trigger_start();
+#endif //CONFIG_POWER_MLKEM_DECAP
+#endif// CONFIG_POWER_MODE_MLKEM
         OQS_STATUS st = OQS_KEM_decaps(kem, ss2, ct, sk);
+#if CONFIG_POWER_MODE_MLKEM
+#if CONFIG_POWER_MLKEM_DECAP
+        ppk2_trigger_stop();
+#endif //CONFIG_POWER_MLKEM_DECAP
+#endif// CONFIG_POWER_MODE_MLKEM
         uint64_t t1 = esp_timer_get_time();
 
         uint32_t heap_after = (uint32_t)heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
