@@ -282,7 +282,7 @@ static void bench_one_mlkem_case(const KemCase *c,
     /* ================= DECAP ================= */
 #if CONFIG_PQC_MLKEM_DECAP
 
-
+/*
 // ===== INVALID ct ==========================
 
     uint8_t *ct_bad = malloc(kem->length_ciphertext);
@@ -295,8 +295,8 @@ static void bench_one_mlkem_case(const KemCase *c,
     memcpy(ct_bad, ct, kem->length_ciphertext);
     ct_bad[0] ^= 0x01;
 
-    //===========================
-
+//===========================
+*/
 
     for (int i = 0; i < warmup_iters; i++) {
         (void)OQS_KEM_decaps(kem, ss2, ct, sk);
