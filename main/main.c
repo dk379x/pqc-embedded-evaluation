@@ -21,7 +21,7 @@
 
 // BENCH
 #include "bench/mlkem/bench_mlkem.h"
-#include "bench/mldsa/bench_mldsa.h"
+/*#include "bench/mldsa/bench_mldsa.h"
 #include "bench/slhdsa/bench_slhdsa.h"
 
 // MEASURE
@@ -32,7 +32,7 @@
 
 // WIRELESS
 #include "wireless/bt_le.h"
-
+*/
 void app_main(void)
 {
 
@@ -42,22 +42,22 @@ void app_main(void)
     const int warmup = CONFIG_PQC_WARMUP_ITERS;
     const int runs   = CONFIG_PQC_RUN_ITERS;
 
-    ppk2_trigger_init();
-    printf("\n[MEAS] PPK2 trigger initialized\n");
+    //ppk2_trigger_init();
+    //printf("\n[MEAS] PPK2 trigger initialized\n");
 
-    ESP_ERROR_CHECK(bt_le_init());
+    //ESP_ERROR_CHECK(bt_le_init());
 
-    bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
+    //bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
 
 #if CONFIG_ENABLE_INTERNAL_TEMP_SENSOR
-    internal_temp_start_log_task();
+    //internal_temp_start_log_task();
 #endif
 
-#if CONFIG_PQC_RUN_MLKEM
+//#if CONFIG_PQC_RUN_MLKEM
     printf("\n[RUN] ML-KEM\n");
     bench_mlkem_all_full(warmup, runs);
-#endif
-
+//#endif
+/*
 #if CONFIG_PQC_RUN_MLDSA
     printf("\n[RUN] ML-DSA\n");
     bench_mldsa_all_full(warmup, runs);
@@ -88,7 +88,7 @@ void app_main(void)
 
     printf("\n[MEAS] Empty control window measurement stopped\n");
 #endif
-
+*/
     /*
     while (1)
     {
@@ -99,8 +99,8 @@ void app_main(void)
     printf("\nAll enabled benchmarks finished.\n");
 
     while (1) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
+       // vTaskDelay(pdMS_TO_TICKS(1000));
+        //bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
     }
 }
 

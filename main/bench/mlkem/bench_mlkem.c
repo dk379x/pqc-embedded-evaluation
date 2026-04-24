@@ -29,13 +29,13 @@ typedef struct {
 } KemCase;
 
 static const KemCase mlkem_cases[] = {
-#if CONFIG_MLKEM_LEVEL_512
+//#if CONFIG_MLKEM_LEVEL_512
     { "ML-KEM-512",  OQS_KEM_alg_ml_kem_512  },
-#elif CONFIG_MLKEM_LEVEL_768
+//#elif CONFIG_MLKEM_LEVEL_768
     { "ML-KEM-768",  OQS_KEM_alg_ml_kem_768  },
-#elif CONFIG_MLKEM_LEVEL_1024
+//#elif CONFIG_MLKEM_LEVEL_1024
     { "ML-KEM-1024", OQS_KEM_alg_ml_kem_1024 },
-#endif
+//#endif
 };
 
 static const size_t MLKEM_CASES_COUNT =
