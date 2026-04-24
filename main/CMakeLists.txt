@@ -5,6 +5,7 @@ idf_component_register(
         "bench/mldsa/bench_mldsa.c"
         "bench/slhdsa/bench_slhdsa.c"
         "measure/ppk2_trigger.c"
+        "sensor/internal_temp.c"
     INCLUDE_DIRS
         ""
         "bench"
@@ -12,8 +13,10 @@ idf_component_register(
         "bench/mldsa"
         "bench/slhdsa"
         "measure"
+        "sensor"
     REQUIRES
         esp_driver_gpio
         esp_timer
         liboqs
+        driver
     )                    

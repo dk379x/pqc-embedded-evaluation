@@ -96,3 +96,14 @@ menu "Power Measurement"
     endchoice
 
 endmenu
+
+menu "PQC Embedded Evaluation"
+
+config ENABLE_INTERNAL_TEMP_SENSOR
+    bool "Enable internal temperature sensor workload"
+    default y
+    help
+        Enables periodic internal temperature sensor readings
+        as part of embedded workload simulation.
+
+endmenu

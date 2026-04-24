@@ -27,17 +27,24 @@
 // MEASURE
 #include "measure/ppk2_trigger.h"
 
+// SENSOR
+#include "sensor/internal_temp.h"
+
 void app_main(void)
 {
 
     printf("PQC EMBEDDED EVALUATION FRAMEWORK by dk379x\n");
-    printf("pqc-embedded-evaluation | ESP32-C6 | liboqs\n");
+    printf("pqc-embedded-evaluation | ESP32-C6 | liboqs | PPK2\n");
 
     const int warmup = CONFIG_PQC_WARMUP_ITERS;
     const int runs   = CONFIG_PQC_RUN_ITERS;
 
     ppk2_trigger_init();
     printf("\n[MEAS] PPK2 trigger initialized\n");
+
+#if CONFIG_ENABLE_INTERNAL_TEMP_SENSOR
+    internal_temp_start_log_task();
+#endif
 
 #if CONFIG_PQC_RUN_MLKEM
     printf("\n[RUN] ML-KEM\n");
