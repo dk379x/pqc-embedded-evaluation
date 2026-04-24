@@ -1,8 +1,8 @@
 idf_component_register(
     SRCS
         "main.c"
-        "bench/mlkem/bench_mlkem.c"
-        # "bench/mldsa/bench_mldsa.c"
+        # "bench/mlkem/bench_mlkem.c"
+        "bench/mldsa/bench_mldsa.c"
         # "bench/slhdsa/bench_slhdsa.c"
         # "measure/ppk2_trigger.c"
         # "sensor/internal_temp.c"
