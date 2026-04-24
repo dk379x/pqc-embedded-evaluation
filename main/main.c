@@ -30,6 +30,9 @@
 // SENSOR
 #include "sensor/internal_temp.h"
 
+// WIRELESS
+#include "wireless/bt_le.h"
+
 void app_main(void)
 {
 
@@ -41,6 +44,10 @@ void app_main(void)
 
     ppk2_trigger_init();
     printf("\n[MEAS] PPK2 trigger initialized\n");
+
+    ESP_ERROR_CHECK(bt_le_init());
+
+    bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
 
 #if CONFIG_ENABLE_INTERNAL_TEMP_SENSOR
     internal_temp_start_log_task();
@@ -91,8 +98,10 @@ void app_main(void)
 
     printf("\nAll enabled benchmarks finished.\n");
 
-    while (1) vTaskDelay(pdMS_TO_TICKS(1000));
-
+    while (1) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
+    }
 }
 
  
