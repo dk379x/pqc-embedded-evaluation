@@ -21,9 +21,9 @@
 
 // BENCH
 //#include "bench/mlkem/bench_mlkem.h"
-#include "bench/mldsa/bench_mldsa.h"
-/*#include "bench/slhdsa/bench_slhdsa.h"
-
+//#include "bench/mldsa/bench_mldsa.h"
+#include "bench/slhdsa/bench_slhdsa.h"
+/*
 // MEASURE
 #include "measure/ppk2_trigger.h"
 
@@ -59,15 +59,15 @@ void app_main(void)
 //#endif
 
 //#if CONFIG_PQC_RUN_MLDSA
-    printf("\n[RUN] ML-DSA\n");
-    bench_mldsa_all_full(warmup, runs);
+    //printf("\n[RUN] ML-DSA\n");
+    //bench_mldsa_all_full(warmup, runs);
+//#endif
+
+//#if CONFIG_PQC_RUN_SLHDSA
+    printf("\n[RUN] SLH-DSA\n");
+    bench_slhdsa_all_full(2, 20);
 //#endif
 /*
-#if CONFIG_PQC_RUN_SLHDSA
-    printf("\n[RUN] SLH-DSA\n");
-    bench_slhdsa_all_full(0, 1);
-#endif
-
 #if CONFIG_POWER_MODE_IDLE
 
     printf("[MEAS] Idle baseline measurement started\n");
