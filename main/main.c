@@ -65,7 +65,7 @@ void app_main(void)
 
 //#if CONFIG_PQC_RUN_SLHDSA
     printf("\n[RUN] SLH-DSA\n");
-    bench_slhdsa_all_full(2, 20);
+    bench_slhdsa_all_full(0, 5);
 //#endif
 /*
 #if CONFIG_POWER_MODE_IDLE
