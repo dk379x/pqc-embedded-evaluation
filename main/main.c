@@ -20,10 +20,10 @@
 #include <oqs.h>
 
 // BENCH
-//#include "bench/mlkem/bench_mlkem.h"
-//#include "bench/mldsa/bench_mldsa.h"
+#include "bench/mlkem/bench_mlkem.h"
+#include "bench/mldsa/bench_mldsa.h"
 #include "bench/slhdsa/bench_slhdsa.h"
-/*
+
 // MEASURE
 #include "measure/ppk2_trigger.h"
 
@@ -32,7 +32,11 @@
 
 // WIRELESS
 #include "wireless/bt_le.h"
-*/
+
+// WORKLOAD
+#include "workload/workload.h"
+
+
 void app_main(void)
 {
 
@@ -49,6 +53,9 @@ void app_main(void)
 
     //bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
 
+    ESP_ERROR_CHECK(bt_le_init());
+    workload_start();
+
 #if CONFIG_ENABLE_INTERNAL_TEMP_SENSOR
     //internal_temp_start_log_task();
 #endif
@@ -64,8 +71,8 @@ void app_main(void)
 //#endif
 
 //#if CONFIG_PQC_RUN_SLHDSA
-    printf("\n[RUN] SLH-DSA\n");
-    bench_slhdsa_all_full(0, 5);
+    //printf("\n[RUN] SLH-DSA\n");
+    //bench_slhdsa_all_full(0, 5);
 //#endif
 /*
 #if CONFIG_POWER_MODE_IDLE
