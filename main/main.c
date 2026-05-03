@@ -53,8 +53,14 @@ void app_main(void)
 
     //bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
 
+    esp_log_level_set("NimBLE", ESP_LOG_ERROR);
+
     ESP_ERROR_CHECK(bt_le_init());
     workload_start();
+
+    printf("Please connect to BLE\n");
+
+    vTaskDelay(pdMS_TO_TICKS(10000));
 
 #if CONFIG_ENABLE_INTERNAL_TEMP_SENSOR
     //internal_temp_start_log_task();
@@ -71,8 +77,8 @@ void app_main(void)
 //#endif
 
 //#if CONFIG_PQC_RUN_SLHDSA
-    //printf("\n[RUN] SLH-DSA\n");
-    //bench_slhdsa_all_full(0, 5);
+    printf("\n[RUN] SLH-DSA\n");
+    bench_slhdsa_all_full(2, 10);
 //#endif
 /*
 #if CONFIG_POWER_MODE_IDLE

@@ -98,7 +98,8 @@ static void workload_task(void *arg)
 
             bt_le_update_payload(payload);
 
-            ESP_LOGI(TAG, "%s", payload);
+            // Uncomment for sending payload to terminal - DEBUG
+            //ESP_LOGI(TAG, "%s", payload);
         } else {
             ESP_LOGW(TAG, "Temperature read failed");
         }
