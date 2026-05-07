@@ -39,6 +39,9 @@
 // HARDWARE CRYPTO
 #include "hardware/sha2/oqs_sha2_esp.h"
 
+// COMBINED
+#include "bench/combined/mlkem_mldsa.h"
+
 
 void app_main(void)
 {
@@ -83,11 +86,18 @@ void app_main(void)
 
 //#if CONFIG_PQC_RUN_SLHDSA
 
-    oqs_sha2_esp_install();
+    // HARDWARE SHA
+    //oqs_sha2_esp_install();
 
+    /*
     printf("\n[RUN] SLH-DSA\n");
     bench_slhdsa_all_full(2, 20);
+    */
 //#endif
+
+
+    printf("\n[RUN] COMBINED ML-KEM + ML-DSA\n");
+    bench_mlkem_mldsa_all_full(1, 2);
 /*
 #if CONFIG_POWER_MODE_IDLE
 

@@ -9,6 +9,7 @@ idf_component_register(
         "wireless/bt_le.c"
         "workload/workload.c"
         "hardware/sha2/oqs_sha2_esp.c"
+        "bench/combined/mlkem_mldsa.c"
     INCLUDE_DIRS
         ""
         "bench"
@@ -20,6 +21,7 @@ idf_component_register(
         "wireless"
         "workload"
         "hardware/sha2"
+        "bench/combined"
     REQUIRES
         esp_driver_gpio
         esp_timer
