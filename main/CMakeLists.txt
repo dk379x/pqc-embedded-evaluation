@@ -8,6 +8,7 @@ idf_component_register(
         "sensor/internal_temp.c"
         "wireless/bt_le.c"
         "workload/workload.c"
+        "hardware/sha2/oqs_sha2_esp.c"
     INCLUDE_DIRS
         ""
         "bench"
@@ -18,6 +19,7 @@ idf_component_register(
         "sensor"
         "wireless"
         "workload"
+        "hardware/sha2"
     REQUIRES
         esp_driver_gpio
         esp_timer
@@ -25,4 +27,5 @@ idf_component_register(
         driver
         bt
         nvs_flash
+        mbedtls
     )                    

@@ -9,7 +9,7 @@
     "api.h": "c"
   },
   "idf.pythonInstallPath": "/usr/bin/python3",
-  "idf.port": "/dev/tty.usbmodem1101",
+  "idf.port": "/dev/tty.usbmodem2101",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32c6"
   },

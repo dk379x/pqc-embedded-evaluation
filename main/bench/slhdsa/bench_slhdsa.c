@@ -44,7 +44,7 @@ static const slhdsa_case_t g_cases[] = {
     { "SLH-DSA-SHAKE-192f", OQS_SIG_alg_sphincs_shake_192f_simple },
     { "SLH-DSA-SHAKE-256s", OQS_SIG_alg_sphincs_shake_256s_simple },
     { "SLH-DSA-SHAKE-256f", OQS_SIG_alg_sphincs_shake_256f_simple },
-     */
+    */
 };
 
 static const size_t g_cases_count = sizeof(g_cases) / sizeof(g_cases[0]);
