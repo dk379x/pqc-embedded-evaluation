@@ -10,6 +10,7 @@ idf_component_register(
         "workload/workload.c"
         "hardware/sha2/oqs_sha2_esp.c"
         "bench/combined/mlkem_mldsa.c"
+        "wireless/wifi.c"
     INCLUDE_DIRS
         ""
         "bench"

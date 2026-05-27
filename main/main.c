@@ -13,6 +13,7 @@
  #include "esp_timer.h"
  #include "esp_task_wdt.h"
  #include "esp_heap_caps.h"
+ #include "nvs_flash.h"
  
  #include <stdlib.h>
  #include <string.h>
@@ -32,6 +33,7 @@
 
 // WIRELESS
 #include "wireless/bt_le.h"
+#include "wireless/wifi.h"
 
 // WORKLOAD
 #include "workload/workload.h"
@@ -59,6 +61,25 @@ void app_main(void)
 
     //bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
 
+    // Start WI-FI 
+
+    esp_err_t ret = nvs_flash_init();
+
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES ||
+
+        ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+
+        ESP_ERROR_CHECK(nvs_flash_erase());
+
+        ret = nvs_flash_init();
+
+    }
+
+    ESP_ERROR_CHECK(ret);
+
+    // then init netif/event loop/wifi
+
+    wifi_start_sta();
    
     esp_log_level_set("NimBLE", ESP_LOG_ERROR);
 
@@ -90,9 +111,10 @@ void app_main(void)
     //oqs_sha2_esp_install();
 
     
+    /*
     printf("\n[RUN] SLH-DSA\n");
     bench_slhdsa_all_full(1, 3);
-    
+    */
 //#endif
 
 
