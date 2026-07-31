@@ -57,6 +57,9 @@ void app_main(void)
     //ppk2_trigger_init();
     //printf("\n[MEAS] PPK2 trigger initialized\n");
 
+
+    // BLUETOOTH LE
+
     //ESP_ERROR_CHECK(bt_le_init());
 
     //bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
@@ -118,8 +121,8 @@ void app_main(void)
 //#endif
 
 
-    //printf("\n[RUN] COMBINED ML-KEM + ML-DSA\n");
-    //bench_mlkem_mldsa_all_full(5, 100);
+    printf("\n[RUN] COMBINED ML-KEM + ML-DSA\n");
+    bench_mlkem_mldsa_all_full(5, 100);
 /*
 #if CONFIG_POWER_MODE_IDLE
 
