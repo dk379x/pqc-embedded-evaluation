@@ -9,11 +9,17 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+/* Temperature sensor support is disabled for this build. */
+#if 0
 #include "../sensor/internal_temp.h"
+#endif
 #include "../wireless/bt_le.h"
 
+#if 0
 #define TEMP_WINDOW_SIZE 16
+#endif
 
+#if 0
 static const char *TAG = "WORKLOAD";
 
 static float temp_window[TEMP_WINDOW_SIZE];
@@ -47,6 +53,7 @@ static const char *compute_trend(float avg)
 
     return "STABLE";
 }
+#endif
 
 static void synthetic_processing_load(float input)
 {
@@ -62,9 +69,12 @@ static void workload_task(void *arg)
 {
     (void)arg;
 
+#if 0
     ESP_ERROR_CHECK(internal_temp_init());
+#endif
 
     while (1) {
+#if 0
         float temp = 0.0f;
 
         if (internal_temp_read_celsius(&temp) == ESP_OK) {
@@ -103,6 +113,18 @@ static void workload_task(void *arg)
         } else {
             ESP_LOGW(TAG, "Temperature read failed");
         }
+#else
+        synthetic_processing_load(1.0f);
+
+        //size_t free_heap = heap_caps_get_free_size(MALLOC_CAP_DEFAULT);
+
+        //char payload[160];
+        //snprintf(payload, sizeof(payload),
+        //         "HEAP=%u",
+        //         (unsigned)free_heap);
+
+        //bt_le_update_payload(payload);
+#endif
 
         vTaskDelay(pdMS_TO_TICKS(1000));
     }

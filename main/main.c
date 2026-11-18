@@ -44,15 +44,81 @@
 // COMBINED
 #include "bench/combined/mlkem_mldsa.h"
 
+// Wybór benchmarku uruchamianego w osobnym tasku FreeRTOS
+typedef enum {
+    BENCHMARK_COMBINED,
+    BENCHMARK_MLKEM,
+    BENCHMARK_MLDSA,
+    BENCHMARK_SLHDSA,
+} benchmark_kind_t;
+
+// Przekazanie wybranego benchmarku i handlera taska
+typedef struct {
+    TaskHandle_t caller;
+    benchmark_kind_t kind;
+} benchmark_task_args_t;
+
+// Wykonanie benchmarku z ustawioną liczbą iteracji
+static void benchmark_task(void *arg)
+{
+    benchmark_task_args_t *args = (benchmark_task_args_t *)arg;
+    const int warmup = CONFIG_PQC_WARMUP_ITERS;
+    const int runs = CONFIG_PQC_RUN_ITERS;
+
+    switch (args->kind) {
+        case BENCHMARK_COMBINED:
+            printf("\n[RUN] COMBINED ML-KEM + ML-DSA\n");
+            bench_mlkem_mldsa_all_full(warmup, runs);
+            break;
+        case BENCHMARK_MLKEM:
+            printf("\n[RUN] ML-KEM\n");
+            bench_mlkem_all_full(warmup, runs);
+            break;
+        case BENCHMARK_MLDSA:
+            printf("\n[RUN] ML-DSA\n");
+            bench_mldsa_all_full(warmup, runs);
+            break;
+        case BENCHMARK_SLHDSA:
+            printf("\n[RUN] SLH-DSA\n");
+            bench_slhdsa_all_full(warmup, runs);
+            break;
+    }
+
+    xTaskNotifyGive(args->caller);
+    vTaskDelete(NULL);
+}
+
+// Utworzenie taska z własnym stosem
+static void run_benchmark_task(benchmark_kind_t kind, uint32_t stack_size)
+{
+    benchmark_task_args_t args = {
+        .caller = xTaskGetCurrentTaskHandle(),
+        .kind = kind,
+    };
+
+    BaseType_t created = xTaskCreate(
+        benchmark_task,
+        "pqc_benchmark",
+        stack_size,
+        &args,
+        5,
+        NULL
+    );
+
+    if (created != pdPASS) {
+        printf("[ERR] Failed to create benchmark task (stack=%u)\n",
+               (unsigned)stack_size);
+        return;
+    }
+
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+}
 
 void app_main(void)
 {
 
     printf("PQC EMBEDDED EVALUATION FRAMEWORK by dk379x\n");
     printf("pqc-embedded-evaluation | ESP32-C6 | liboqs | PPK2\n");
-
-    const int warmup = CONFIG_PQC_WARMUP_ITERS;
-    const int runs   = CONFIG_PQC_RUN_ITERS;
 
     //ppk2_trigger_init();
     //printf("\n[MEAS] PPK2 trigger initialized\n");
@@ -82,16 +148,17 @@ void app_main(void)
 
     // then init netif/event loop/wifi
 
+    // Moduł radiowy Wi-Fi dostarcza entropię sprzętowemu RNG
     wifi_start_sta();
    
-    esp_log_level_set("NimBLE", ESP_LOG_ERROR);
+    //esp_log_level_set("NimBLE", ESP_LOG_ERROR);
 
-    ESP_ERROR_CHECK(bt_le_init());
+    //ESP_ERROR_CHECK(bt_le_init());
     workload_start();
 
-    printf("Please connect to BLE\n");
+    //printf("Please connect to BLE\n");
 
-    vTaskDelay(pdMS_TO_TICKS(10000));
+    //vTaskDelay(pdMS_TO_TICKS(10000));
    
 
 #if CONFIG_ENABLE_INTERNAL_TEMP_SENSOR
@@ -112,17 +179,32 @@ void app_main(void)
 
     // HARDWARE SHA
     //oqs_sha2_esp_install();
-
     
+
     /*
     printf("\n[RUN] SLH-DSA\n");
     bench_slhdsa_all_full(1, 3);
     */
 //#endif
 
+#if CONFIG_PQC_RUN_MLKEM && CONFIG_PQC_RUN_MLDSA
+    run_benchmark_task(BENCHMARK_COMBINED,
+                       CONFIG_PQC_BENCHMARK_TASK_STACK_SIZE);
+#endif
 
-    printf("\n[RUN] COMBINED ML-KEM + ML-DSA\n");
-    bench_mlkem_mldsa_all_full(5, 100);
+#if CONFIG_PQC_RUN_MLKEM
+    run_benchmark_task(BENCHMARK_MLKEM, 98304);
+#endif
+
+#if CONFIG_PQC_RUN_MLDSA
+    run_benchmark_task(BENCHMARK_MLDSA, 98304);
+#endif
+
+#if CONFIG_PQC_RUN_SLHDSA
+    run_benchmark_task(BENCHMARK_SLHDSA, 32768);
+#endif
+
+
 /*
 #if CONFIG_POWER_MODE_IDLE
 
@@ -155,7 +237,7 @@ void app_main(void)
     printf("\nAll enabled benchmarks finished.\n");
 
     while (1) {
-       // vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(1000));
         //bt_le_update_payload("TEMP=25.4;ALG=IDLE;TIME_MS=0;HEAP=331000");
     }
 }

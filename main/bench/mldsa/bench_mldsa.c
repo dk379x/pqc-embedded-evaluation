@@ -27,7 +27,9 @@ typedef struct {
 static const SigCase mldsa_cases[] = {
     { "ML-DSA-44", "ML-DSA-44" },
     { "ML-DSA-65", "ML-DSA-65" },
+#if CONFIG_PQC_RUN_MLDSA87
     { "ML-DSA-87", "ML-DSA-87" },
+#endif
 };
 
 static const size_t MLDSA_CASES_COUNT =
