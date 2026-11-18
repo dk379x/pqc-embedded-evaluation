@@ -11,6 +11,8 @@
 
 #include "esp_timer.h"
 #include "esp_heap_caps.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #include <oqs.h>
 
@@ -29,23 +31,20 @@ typedef struct {
 /* NIST SLH-DSA / SPHINCS+ (simple) – zgodnie z Twoją listą */
 static const slhdsa_case_t g_cases[] = {
     /* SHA2 profile */
-    /*{ "SLH-DSA-SHA2-128s",  OQS_SIG_alg_sphincs_sha2_128s_simple  },
+    //{ "SLH-DSA-SHA2-128s",  OQS_SIG_alg_sphincs_sha2_128s_simple  },
     { "SLH-DSA-SHA2-128f",  OQS_SIG_alg_sphincs_sha2_128f_simple  },
-    { "SLH-DSA-SHA2-192s",  OQS_SIG_alg_sphincs_sha2_192s_simple  },
+    //{ "SLH-DSA-SHA2-192s",  OQS_SIG_alg_sphincs_sha2_192s_simple  },
     { "SLH-DSA-SHA2-192f",  OQS_SIG_alg_sphincs_sha2_192f_simple  },
-    { "SLH-DSA-SHA2-256s",  OQS_SIG_alg_sphincs_sha2_256s_simple  },
+    //{ "SLH-DSA-SHA2-256s",  OQS_SIG_alg_sphincs_sha2_256s_simple  },
     { "SLH-DSA-SHA2-256f",  OQS_SIG_alg_sphincs_sha2_256f_simple  },
-     */
-    
 
     /* SHAKE profile */
     //{ "SLH-DSA-SHAKE-128s", OQS_SIG_alg_sphincs_shake_128s_simple },
-    //{ "SLH-DSA-SHAKE-128f", OQS_SIG_alg_sphincs_shake_128f_simple },
-    { "SLH-DSA-SHAKE-192s", OQS_SIG_alg_sphincs_shake_192s_simple },
+    { "SLH-DSA-SHAKE-128f", OQS_SIG_alg_sphincs_shake_128f_simple },
+    //{ "SLH-DSA-SHAKE-192s", OQS_SIG_alg_sphincs_shake_192s_simple },
     { "SLH-DSA-SHAKE-192f", OQS_SIG_alg_sphincs_shake_192f_simple },
-    { "SLH-DSA-SHAKE-256s", OQS_SIG_alg_sphincs_shake_256s_simple },
+    //{ "SLH-DSA-SHAKE-256s", OQS_SIG_alg_sphincs_shake_256s_simple },
     { "SLH-DSA-SHAKE-256f", OQS_SIG_alg_sphincs_shake_256f_simple },
-    
 };
 
 static const size_t g_cases_count = sizeof(g_cases) / sizeof(g_cases[0]);
@@ -127,13 +126,22 @@ static void bench_one_case(const slhdsa_case_t *c, int warmup, int runs)
         return;
     }
 
-    /* Warmup: nie raportujemy, ale robimy real work */
+    printf("  warmup start (%d iterations)\n", warmup);
     for (int i = 0; i < warmup; i++) {
         size_t sig_len = 0;
+        printf("  warmup %03d/%03d: keygen\n", i + 1, warmup);
         (void)bench_keygen(sig, pk, sk);
+        vTaskDelay(1);
+
+        printf("  warmup %03d/%03d: sign\n", i + 1, warmup);
         (void)bench_sign(sig, sig_buf, &sig_len, msg, msg_len, sk);
+        vTaskDelay(1);
+
+        printf("  warmup %03d/%03d: verify\n", i + 1, warmup);
         (void)bench_verify(sig, msg, msg_len, sig_buf, sig_len, pk);
+        vTaskDelay(1);
     }
+    printf("  warmup complete\n");
 
     /* Pomiar: raportujemy jak ML-KEM */
     uint32_t heap_min_case = UINT32_MAX;

@@ -9,6 +9,7 @@
 
 #include "esp_timer.h"
 #include "esp_heap_caps.h"
+#include "sdkconfig.h"
 
 static double elapsed_ms(int64_t start_us, int64_t end_us)
 {
@@ -180,10 +181,12 @@ void bench_mlkem_mldsa_all_full(int warmup_runs, int measured_runs)
                       warmup_runs,
                       measured_runs);
 
+#if CONFIG_PQC_RUN_MLDSA87
     run_combined_pair(OQS_KEM_alg_ml_kem_1024,
                       OQS_SIG_alg_ml_dsa_87,
                       warmup_runs,
                       measured_runs);
+#endif
 
     printf("\n=== COMBINED ML-KEM + ML-DSA BENCHMARK END ===\n");
 }

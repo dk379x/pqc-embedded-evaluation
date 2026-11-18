@@ -5,7 +5,6 @@ idf_component_register(
         "bench/mldsa/bench_mldsa.c"
         "bench/slhdsa/bench_slhdsa.c"
         "measure/ppk2_trigger.c"
-        "sensor/internal_temp.c"
         "wireless/bt_le.c"
         "workload/workload.c"
         "hardware/sha2/oqs_sha2_esp.c"
@@ -25,6 +24,7 @@ idf_component_register(
         "bench/combined"
     REQUIRES
         esp_driver_gpio
+        esp_driver_tsens
         esp_timer
         liboqs
         driver

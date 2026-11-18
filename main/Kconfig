@@ -38,6 +38,11 @@ config PQC_RUN_MLDSA
     bool "Run ML-DSA benchmark"
     default n
 
+config PQC_RUN_MLDSA87
+    bool "Run ML-DSA-87 benchmark"
+    default n
+    depends on PQC_RUN_MLDSA
+
 config PQC_RUN_SLHDSA
     bool "Run SLH-DSA benchmark"
     default n
@@ -48,7 +53,12 @@ config PQC_WARMUP_ITERS
 
 config PQC_RUN_ITERS
     int "Measured iterations (N)"
-    default 100
+    default 10
+
+config PQC_BENCHMARK_TASK_STACK_SIZE
+    int "Benchmark task stack size (bytes)"
+    default 131072
+    range 32768 131072
 
 config PQC_LOG_CSV
     bool "Log CSV output"
